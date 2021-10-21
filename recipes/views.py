@@ -109,15 +109,15 @@ def recipe_create_view(request):
         obj = form.save(commit=False)
         obj.user = request.user
         obj.save()
-        #if request.htmx:
-        #    headers = {
-        #        "HX-Redirect": obj.get_absolute_url()
-        #    }
-        #    return HttpResponse("Created", headers=headers)
-            # context = {
-            #     "object": obj
-            # }
-            # return render(request, "recipes/partials/detail.html", context)
+        if request.htmx:
+            headers = {
+                "HX-Redirect": obj.get_absolute_url()
+            }
+            return HttpResponse("Created", headers=headers)
+            #context = {
+            #    "object": obj
+            #}
+            #return render(request, "recipes/partials/detail.html", context)
         return redirect(obj.get_absolute_url())
     return render(request, "recipes/create-update.html", context)  
 
@@ -125,7 +125,7 @@ def recipe_create_view(request):
 def recipe_update_view(request, id=None):
     obj = get_object_or_404(Recipe, id=id, user=request.user)
     form = RecipeForm(request.POST or None, instance=obj)
-    #new_ingredient_url = reverse("recipes:hx-ingredient-create", kwargs={"parent_id": obj.id})
+    new_ingredient_url = reverse("recipes:hx-ingredient-create", kwargs={"parent_id": obj.id})
 
     context = {
         "form": form,
@@ -135,8 +135,8 @@ def recipe_update_view(request, id=None):
     if form.is_valid():
         form.save()
         context['message'] = 'Data saved.'
-    #if request.htmx:
-    #    return render(request, "recipes/partials/forms.html", context)
+    if request.htmx:
+        return render(request, "recipes/partials/forms.html", context)
     return render(request, "recipes/create-update.html", context)  
 
 

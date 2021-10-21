@@ -21,13 +21,8 @@ from accounts.views import (
     logout_view,
     register_view
 )
-from articles.views import (
-    article_search_view,
-    article_create_view,
-    article_detail_view,
-)
 
-#from search.views import search_view
+from search.views import search_view
 from .views import home_view
 
 
@@ -36,7 +31,7 @@ urlpatterns = [
     path('pantry/recipes/', include('recipes.urls')),
     path('articles/', include('articles.urls')),
     #path('meal-toggle/<int:recipe_id>/', meal_queue_toggle_view, name='meal-toggle'),
-    #path('search/', search_view, name='search'),
+    path('search/', search_view, name='search'),
     path('admin/', admin.site.urls),
     path('login/', login_view),
     path('logout/', logout_view),
