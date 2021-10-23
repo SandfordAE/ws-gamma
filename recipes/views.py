@@ -1,13 +1,10 @@
-from django.shortcuts import render
-
-# Create your views here.
 from django.contrib.auth.decorators import login_required
 from django.forms.models import modelformset_factory # model form for querysets
 from django.urls import reverse
 from django.http import HttpResponse, Http404
 from django.shortcuts import redirect, render, get_object_or_404
 
-from .forms import RecipeForm, RecipeIngredientForm #, RecipeIngredientImageForm
+from .forms import RecipeForm, RecipeIngredientForm
 from .models import Recipe, RecipeIngredient
 from .services import extract_text_via_ocr_service
 from .utils import (
@@ -114,23 +111,23 @@ def recipe_create_view(request):
                 "HX-Redirect": obj.get_absolute_url()
             }
             return HttpResponse("Created", headers=headers)
-            #context = {
-            #    "object": obj
-            #}
-            #return render(request, "recipes/partials/detail.html", context)
+            # context = {
+            #     "object": obj
+            # }
+            # return render(request, "recipes/partials/detail.html", context)
         return redirect(obj.get_absolute_url())
     return render(request, "recipes/create-update.html", context)  
+
 
 @login_required
 def recipe_update_view(request, id=None):
     obj = get_object_or_404(Recipe, id=id, user=request.user)
     form = RecipeForm(request.POST or None, instance=obj)
     new_ingredient_url = reverse("recipes:hx-ingredient-create", kwargs={"parent_id": obj.id})
-
     context = {
         "form": form,
         "object": obj,
-        
+        "new_ingredient_url": new_ingredient_url
     }
     if form.is_valid():
         form.save()
@@ -175,44 +172,4 @@ def recipe_ingredient_update_hx_view(request, parent_id=None, id=None):
     return render(request, "recipes/partials/ingredient-form.html", context) 
 
 
-'''
-def recipe_ingredient_image_upload_view(request, parent_id=None):
-    template_name = "recipes/upload-image.html"
-    if request.htmx:
-        template_name = "recipes/partials/image-upload-form.html"
-    try:
-        parent_obj = Recipe.objects.get(id=parent_id, user=request.user)
-    except:
-        parent_obj = None
-    if parent_obj is None:
-        raise Http404
-    form = RecipeIngredientImageForm(request.POST or None, request.FILES or None)
-    if form.is_valid():
-        obj = form.save(commit=False)
-        obj.recipe = parent_obj
-        # obj.recipe_id = parent_id
-        obj.save()
-        # send image file -> microservice api
-        # microservice api -> data about the file
-        # cloud providers $$
-        extracted = extract_text_via_ocr_service(obj.image)
-        obj.extracted = extracted
-        obj.save()
-        og = extracted['original']
-        results = parse_paragraph_to_recipe_line(og)
-        dataset = convert_to_qty_units(results)
-        new_objs = []
-        for data in dataset:
-            data['recipe_id']  = parent_id
-            new_objs.append(RecipeIngredient(**data))
-        RecipeIngredient.objects.bulk_create(new_objs)
-        success_url = parent_obj.get_edit_url()
-        if request.htmx:
-            headers = {
-                'HX-Redirect': success_url
-            }
-            return HttpResponse("Success", headers=headers)
-        return redirect(success_url)
 
-    return render(request, template_name, {"form":form})
-    '''

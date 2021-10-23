@@ -29,9 +29,10 @@
             {% for ingredient in object.get_ingredients_children %}
                     {% include 'recipes/partials/ingredient-inline.html' with object=ingredient %}
             {% endfor %}
-            </div>
+            
             
             {% if new_ingredient_url %}
+            </div>
             <div id='ingredient-create'>               
                 <button hx-get="{{ new_ingredient_url }}" hx-trigger='click'
                 hx-target='#ingredients-list' hx-swap='beforeend'>Add ingredient</button>

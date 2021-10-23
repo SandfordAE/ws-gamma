@@ -28,4 +28,3 @@ def search_view(request):
         context['queryset'] = qs[:5]
         template = "search/partials/results.html"
     return render(request, template, context)
-
