@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.http import HttpResponse, Http404
 from django.shortcuts import redirect, render, get_object_or_404
 
-from .forms import RecipeForm, RecipeIngredientForm
+from .forms import RecipeForm, RecipeIngredientForm, RecipeIngredientImageForm
 from .models import Recipe, RecipeIngredient
 from .services import extract_text_via_ocr_service
 from .utils import (
@@ -173,3 +173,42 @@ def recipe_ingredient_update_hx_view(request, parent_id=None, id=None):
 
 
 
+def recipe_ingredient_image_upload_view(request, parent_id=None):
+    template_name = "recipes/upload-image.html"
+    if request.htmx:
+        template_name = "recipes/partials/image-upload-form.html"
+    try:
+        parent_obj = Recipe.objects.get(id=parent_id, user=request.user)
+    except:
+        parent_obj = None
+    if parent_obj is None:
+        raise Http404
+    form = RecipeIngredientImageForm(request.POST or None, request.FILES or None)
+    if form.is_valid():
+        obj = form.save(commit=False)
+        obj.recipe = parent_obj
+        # obj.recipe_id = parent_id
+        obj.save()
+        # send image file -> microservice api
+        # microservice api -> data about the file
+        # cloud providers $$
+        extracted = extract_text_via_ocr_service(obj.image)
+        obj.extracted = extracted
+        obj.save()
+        og = extracted['original']
+        results = parse_paragraph_to_recipe_line(og)
+        dataset = convert_to_qty_units(results)
+        new_objs = []
+        for data in dataset:
+            data['recipe_id']  = parent_id
+            new_objs.append(RecipeIngredient(**data))
+        RecipeIngredient.objects.bulk_create(new_objs)
+        success_url = parent_obj.get_edit_url()
+        if request.htmx:
+            headers = {
+                'HX-Redirect': success_url
+            }
+            return HttpResponse("Success", headers=headers)
+        return redirect(success_url)
+
+    return render(request, template_name, {"form":form})

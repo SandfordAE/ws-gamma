@@ -1,15 +1,15 @@
 from django import forms
 
 
-from .models import Recipe, RecipeIngredient #, RecipeIngredientImage
+from .models import Recipe, RecipeIngredient , RecipeIngredientImage
 
-#class RecipeIngredientImageForm(forms.ModelForm):
-#    class Meta:
-#        model = RecipeIngredientImage
-#        fields = ['image']
-#        labels = {
-#            "image": "Extract via Image Upload"
-#        }
+class RecipeIngredientImageForm(forms.ModelForm):
+    class Meta:
+        model = RecipeIngredientImage
+        fields = ['image']
+        labels = {
+            "image": "Extract via Image Upload"
+        }
 
 class RecipeForm(forms.ModelForm):
     error_css_class = 'error-field'

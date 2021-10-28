@@ -69,21 +69,21 @@ class Recipe(models.Model):
     def get_ingredients_children(self):
         return self.recipeingredient_set.all()
 
-#    def get_image_upload_url(self):
-#        return reverse("recipes:recipe-ingredient-image-upload", kwargs={"parent_id": self.id})
+    def get_image_upload_url(self):
+        return reverse("recipes:recipe-ingredient-image-upload", kwargs={"parent_id": self.id})
 
 
 
-#def recipe_ingredient_image_upload_handler(instance, filename):
-#    fpath = pathlib.Path(filename)
-#    new_fname = str(uuid.uuid1()) # uuid1 -> uuid + timestamps
-#    return f"recipes/ingredient/{new_fname}{fpath.suffix}"
+def recipe_ingredient_image_upload_handler(instance, filename):
+    fpath = pathlib.Path(filename)
+    new_fname = str(uuid.uuid1()) # uuid1 -> uuid + timestamps
+    return f"recipes/ingredient/{new_fname}{fpath.suffix}"
 
 
-#class RecipeIngredientImage(models.Model):
-#    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
-#    image = models.ImageField(upload_to=recipe_ingredient_image_upload_handler) # path/to/the/actual/file.png
-#    extracted = models.JSONField(blank=True, null=True)
+class RecipeIngredientImage(models.Model):
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to=recipe_ingredient_image_upload_handler) # path/to/the/actual/file.png
+    #extracted = models.JSONField(blank=True, null=True)
     
     # image
     # extracted_text
