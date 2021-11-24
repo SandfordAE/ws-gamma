@@ -5,6 +5,7 @@ from django.db.models.signals import pre_save, post_save
 from django.urls import reverse
 from django.utils import timezone
 
+
 from .utils import slugify_instance_title
 
 User = settings.AUTH_USER_MODEL
@@ -69,3 +70,5 @@ def article_post_save(sender, instance, created, *args, **kwargs):
         slugify_instance_title(instance, save=True)
 
 post_save.connect(article_post_save, sender=Article)
+
+
