@@ -195,6 +195,7 @@ def recipe_ingredient_image_upload_view(request, parent_id=None):
         extracted = extract_text_via_ocr_service(obj.image)
         obj.extracted = extracted
         obj.save()
+        #print(obj.extracted)
         og = extracted['original']
         results = parse_paragraph_to_recipe_line(og)
         dataset = convert_to_qty_units(results)

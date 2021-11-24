@@ -32,7 +32,7 @@ DEBUG = str(os.environ.get('DEBUG')) == "1" # 1 == True
 #ENV_ALLOWED_HOST = os.environ.get('DJANGO_ALLOWED_HOST') or None
 
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 if not DEBUG:
     ALLOWED_HOSTS += [os.environ.get('DJANGO_ALLOWED_HOST')]
 
@@ -46,9 +46,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # third-party
     'django_htmx',
     'storages',
+    # internal
     'articles',
+    #'inventory',
+    'meals',
     'recipes',
     'search',
 ]
